@@ -1,6 +1,6 @@
 package fr.istic.coa.strategy;
 
-import fr.istic.coa.proxy.ISensor;
+import fr.istic.coa.proxy.Sensor;
 
 /**
  * @author thomas
@@ -8,9 +8,9 @@ import fr.istic.coa.proxy.ISensor;
  */
 public class AtomicDiffusion implements DiffusionAlgorithm {
     
-    private ISensor sensor;
+    private Sensor sensor;
     
-    public AtomicDiffusion(ISensor sensor) {
+    public AtomicDiffusion(Sensor sensor) {
         this.sensor = sensor;
     }
     

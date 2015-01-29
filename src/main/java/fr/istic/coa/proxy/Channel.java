@@ -12,7 +12,7 @@ import java.util.concurrent.*;
  * @author thomas
  * @author amona
  */
-public class Channel implements ISensorObserver, Observable {
+public class Channel implements SensorObserver, Observable {
 
     private Sensor sensor;
     private ScheduledExecutorService executorService;
@@ -28,7 +28,7 @@ public class Channel implements ISensorObserver, Observable {
     }
     
     @Override
-    public void update(ISensor subject) {
+    public void update(Sensor subject) {
         notifyObservers();
     }
     

@@ -1,8 +1,8 @@
-
 import fr.istic.coa.adapter.FxDisplay;
 import fr.istic.coa.mvc.Controller;
 import fr.istic.coa.proxy.Channel;
 import fr.istic.coa.proxy.Sensor;
+import fr.istic.coa.proxy.BaseSensor;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -29,14 +29,16 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL location = getClass().getResource("sample.fxml");
         Parent root = fxmlLoader.load(location.openStream());
-        controller = fxmlLoader.getController();
         stage.setTitle("COA - Project");
+
+        controller = fxmlLoader.getController();
         Scene scene = new Scene(root, 500, 450);
-        stage.setScene(scene);
         channels = new ArrayList<>();
-        
-        sensor = new Sensor();
+        sensor = new BaseSensor();
+
         createDisplays();
+
+        stage.setScene(scene);
         stage.show();
 
         // Tick

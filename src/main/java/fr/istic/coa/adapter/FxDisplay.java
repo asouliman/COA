@@ -1,7 +1,7 @@
 package fr.istic.coa.adapter;
 
 import fr.istic.coa.proxy.Channel;
-import fr.istic.coa.proxy.IChannelObserver;
+import fr.istic.coa.proxy.ChannelObserver;
 import javafx.scene.control.Label;
 
 import java.util.concurrent.ExecutionException;
@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutionException;
  * @author thomas
  * @author amona
  */
-public class FxDisplay implements IChannelObserver {
+public class FxDisplay implements ChannelObserver {
     
     private Label value;
     
