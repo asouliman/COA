@@ -7,4 +7,5 @@ package fr.istic.coa.observer;
 public interface Observable<T extends Observer> {
     public void addObserver(T o);
     public void removeObserver(T o);
+    public void notifyObservers();
 }
