@@ -1,13 +1,14 @@
 package fr.istic.coa.strategy;
 
-import fr.istic.coa.proxy.Channel;
+import fr.istic.coa.proxy.Sensor;
 
 /**
  * @author thomas
  * @author amona
  */
 public interface DiffusionAlgorithm {
-    public void configure();
+    public void configure(Sensor sensor);
     public void execute();
+    public int getValue();
 }
 

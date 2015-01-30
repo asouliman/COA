@@ -1,7 +1,6 @@
 package fr.istic.coa.proxy;
 
 import fr.istic.coa.observer.Observer;
-import fr.istic.coa.strategy.AtomicDiffusion;
 import fr.istic.coa.strategy.DiffusionAlgorithm;
 
 import java.util.ArrayList;
@@ -12,26 +11,32 @@ import java.util.List;
  * @author amona
  */
 public class BaseSensor implements Sensor {
-    private int value;
     private List<Observer> observers;
     private DiffusionAlgorithm algorithm;
 
     public BaseSensor() {
-        value = 0;
         observers = new ArrayList<>();
-        algorithm = new AtomicDiffusion(this);
-        algorithm.configure();
     }
 
     @Override
     public int getValue() {
-        return value;
+        return algorithm.getValue();
     }
 
     @Override
     public void tick() {
-        value++;
         algorithm.execute();
+    }
+
+    @Override
+    public void setAlgorithm(DiffusionAlgorithm algorithm) {
+        this.algorithm = algorithm;
+        algorithm.configure(this);
+    }
+
+    @Override
+    public List<Observer> getObservers() {
+        return this.observers;
     }
 
     @Override

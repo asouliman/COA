@@ -6,7 +6,10 @@ import fr.istic.coa.observer.Observer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author thomas
@@ -18,29 +21,15 @@ public class Channel implements SensorObserver, Observable {
     private ScheduledExecutorService executorService;
     private List<Observer> observers;
     
-    public Channel() {
-        executorService = Executors.newSingleThreadScheduledExecutor();
-        observers = new ArrayList<>();
-    }
-    
-    public void setSensor(Sensor sensor) {
+    public Channel(ScheduledExecutorService executorService, Sensor sensor) {
+        this.observers = new ArrayList<>();
+        this.executorService = executorService;
         this.sensor = sensor;
     }
-    
+
     @Override
     public void update(Sensor subject) {
         notifyObservers();
-    }
-    
-    public Future<Integer> getValue() {
-        Callable<Integer> c = () -> sensor.getValue();
-        Random r = new Random();
-        int delay = r.nextInt(1000);
-        return executorService.schedule(c, delay, TimeUnit.MILLISECONDS);
-    }
-    
-    public void shutdownExecutor() {
-        executorService.shutdown();
     }
 
     @Override
@@ -58,5 +47,12 @@ public class Channel implements SensorObserver, Observable {
         for (Observer o : observers) {
             o.update(this);
         }
+    }
+
+    public Future<Integer> getValue() {
+        Callable<Integer> c = () -> sensor.getValue();
+        Random r = new Random();
+        int delay = r.nextInt(100);
+        return executorService.schedule(c, delay, TimeUnit.MILLISECONDS);
     }
 }
