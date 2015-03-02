@@ -1,0 +1,10 @@
+#window {
+    -fx-padding: 20;
+}
+
+.display {
+    -fx-padding: 10;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-border-style: solid;
+}

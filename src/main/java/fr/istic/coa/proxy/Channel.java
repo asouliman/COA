@@ -2,6 +2,8 @@ package fr.istic.coa.proxy;
 
 import fr.istic.coa.observer.Observable;
 import fr.istic.coa.observer.Observer;
+import fr.istic.coa.strategy.DiffusionAlgorithm;
+import fr.istic.coa.strategy.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,21 +17,31 @@ import java.util.concurrent.TimeUnit;
  * @author thomas
  * @author amona
  */
-public class Channel implements SensorObserver, Observable {
+public class Channel implements Sensor<Future<Value>>, SensorObserver, Observable {
 
-    private Sensor sensor;
-    private ScheduledExecutorService executorService;
-    private List<Observer> observers;
+    private static final int DELAY = 1000;
     
-    public Channel(ScheduledExecutorService executorService, Sensor sensor) {
+    private Sensor<Value> sensor;
+    private List<Observer> observers;
+    private ScheduledExecutorService executorService;
+
+    public Channel(ScheduledExecutorService executorService, Sensor<Value> sensor) {
+        this.sensor = sensor;
         this.observers = new ArrayList<>();
         this.executorService = executorService;
-        this.sensor = sensor;
     }
 
     @Override
-    public void update(Sensor subject) {
+    public void update(Sensor<Value> subject) {
         notifyObservers();
+    }
+
+    @Override
+    public Future<Integer> updateAsync(Sensor<Value> subject) {
+        return executorService.submit(() -> {
+            notifyObservers();
+            return 0;
+        });
     }
 
     @Override
@@ -49,10 +61,26 @@ public class Channel implements SensorObserver, Observable {
         }
     }
 
-    public Future<Integer> getValue() {
-        Callable<Integer> c = () -> sensor.getValue();
+    @Override
+    public Future<Value> getValue() {
+        Callable<Value> c = sensor::getValue;
         Random r = new Random();
-        int delay = r.nextInt(100);
+        int delay = r.nextInt(DELAY);
         return executorService.schedule(c, delay, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void tick() {
+        sensor.tick();
+    }
+
+    @Override
+    public void setAlgorithm(DiffusionAlgorithm algorithm) {
+        sensor.setAlgorithm(algorithm);
+    }
+
+    @Override
+    public List<Observer> getObservers() {
+        return sensor.getObservers();
     }
 }

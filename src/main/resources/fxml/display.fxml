@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+
+<?import javafx.scene.text.Font?>
+<fx:root type="javafx.scene.layout.VBox" alignment="CENTER" spacing="5" styleClass="display" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <Label fx:id="name"/>
+    <Label fx:id="value">
+        <font>
+            <Font size="20"/>
+        </font>
+    </Label>
+</fx:root>

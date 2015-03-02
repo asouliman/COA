@@ -7,12 +7,13 @@ import fr.istic.coa.proxy.Sensor;
  * @author amona
  */
 public class AtomicDiffusion implements DiffusionAlgorithm {
-    private int value;
+
     private Sensor sensor;
+    private Value value;
     private int notifiedObservers;
     
     public AtomicDiffusion() {
-        value = 0;
+        value = new Value(0);
         notifiedObservers = 0;
     }
 
@@ -24,14 +25,18 @@ public class AtomicDiffusion implements DiffusionAlgorithm {
     @Override
     public void execute() {
         if (notifiedObservers == 0) {
-            value++;
+            incrementValue();
             sensor.notifyObservers();
         }
     }
 
     @Override
-    public int getValue() {
+    public Value getValue() {
         notifiedObservers = (notifiedObservers + 1) % sensor.getObservers().size();
         return value;
+    }
+
+    private void incrementValue() {
+        value.setValue(value.getValue() + 1);
     }
 }

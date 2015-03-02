@@ -4,21 +4,34 @@ import fr.istic.coa.proxy.Sensor;
 
 /**
  * @author thomas
+ * @author amona
  */
 public class TimeDiffusion implements DiffusionAlgorithm {
+    
+    private Value value;
+    private Sensor sensor;
+    
+    public TimeDiffusion() {
+        value = new Value(0, 0);
+    }
+    
     @Override
     public void configure(Sensor sensor) {
-        // TODO: Implement this.
+        this.sensor = sensor;
     }
 
     @Override
     public void execute() {
-        // TODO: Implement this.
+        incrementValue();
+        sensor.notifyObservers();
     }
 
     @Override
-    public int getValue() {
-        // TODO: Implement this.
-        return 0;
+    public Value getValue() {
+        return value;
+    }
+    
+    private void incrementValue() {
+        value.next(value.getValue() + 1);
     }
 }

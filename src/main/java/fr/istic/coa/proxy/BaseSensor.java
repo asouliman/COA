@@ -2,15 +2,19 @@ package fr.istic.coa.proxy;
 
 import fr.istic.coa.observer.Observer;
 import fr.istic.coa.strategy.DiffusionAlgorithm;
+import fr.istic.coa.strategy.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * @author thomas
  * @author amona
  */
-public class BaseSensor implements Sensor {
+public class BaseSensor implements Sensor<Value> {
+    
     private List<Observer> observers;
     private DiffusionAlgorithm algorithm;
 
@@ -19,7 +23,7 @@ public class BaseSensor implements Sensor {
     }
 
     @Override
-    public int getValue() {
+    public Value getValue() {
         return algorithm.getValue();
     }
 
@@ -52,7 +56,7 @@ public class BaseSensor implements Sensor {
     @Override
     public void notifyObservers() {
         for (Observer o : observers) {
-            o.update(this);
+            o.updateAsync(this);
         }
     }
 }

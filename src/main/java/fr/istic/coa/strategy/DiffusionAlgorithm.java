@@ -9,6 +9,6 @@ import fr.istic.coa.proxy.Sensor;
 public interface DiffusionAlgorithm {
     public void configure(Sensor sensor);
     public void execute();
-    public int getValue();
+    public Value getValue();
 }
 

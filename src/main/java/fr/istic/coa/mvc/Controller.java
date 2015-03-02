@@ -3,31 +3,36 @@ package fr.istic.coa.mvc;
 import fr.istic.coa.adapter.FxDisplay;
 import fr.istic.coa.proxy.Channel;
 import fr.istic.coa.proxy.Sensor;
-import fr.istic.coa.strategy.AtomicDiffusion;
-import fr.istic.coa.strategy.DiffusionAlgorithm;
-import fr.istic.coa.strategy.SequenceDiffusion;
-import fr.istic.coa.strategy.TimeDiffusion;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import fr.istic.coa.strategy.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.util.Duration;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Controller implements Initializable {
 
+    private static final int LINE_WIDTH = 4;
+    
     @FXML
-    private GridPane window;
+    private BorderPane window;
+
+    @FXML
+    private Label sensorValue;
+    
+    @FXML
+    private VBox displays;
 
     @FXML
     private Button startStopBtn;
@@ -35,22 +40,21 @@ public class Controller implements Initializable {
     @FXML
     private ChoiceBox<String> algorithmChoice;
 
-    private GridPane displays;
-
-    private Sensor sensor;
-    private Timeline timeline;
-    private List<Channel> channels;
     private boolean stopped;
+    private Sensor<Value> sensor;
+    private List<Channel> channels;
+    private ScheduledExecutorService executorService;
 
     @FXML
     public void onStartStopAction() {
         if (stopped) {
-            timeline.play();
+            executorService = Executors.newSingleThreadScheduledExecutor();
+            executorService.scheduleAtFixedRate(this.sensor::tick, 0, 1000, TimeUnit.MILLISECONDS);
             stopped = false;
             startStopBtn.setText("Stop");
             algorithmChoice.setDisable(true);
         } else {
-            timeline.stop();
+            shutdown();
             stopped = true;
             startStopBtn.setText("Start");
             algorithmChoice.setDisable(false);
@@ -60,28 +64,23 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         stopped = true;
-        displays = new GridPane();
-        window.add(displays, 0, 0);
 
         // Configure the select box
         algorithmChoice.setValue("AtomicDiffusion");
         algorithmChoice.getItems().addAll("AtomicDiffusion", "SequenceDiffusion", "TimeDiffusion");
-        algorithmChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                switch (newValue.intValue()) {
-                    case 0:
-                        sensor.setAlgorithm(new AtomicDiffusion());
-                        break;
-                    case 1:
-                        sensor.setAlgorithm(new SequenceDiffusion());
-                        break;
-                    case 2:
-                        sensor.setAlgorithm(new TimeDiffusion());
-                        break;
-                    default:
-                        break;
-                }
+        algorithmChoice.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            switch (newValue.intValue()) {
+                case 0:
+                    sensor.setAlgorithm(new AtomicDiffusion());
+                    break;
+                case 1:
+                    sensor.setAlgorithm(new SequenceDiffusion());
+                    break;
+                case 2:
+                    sensor.setAlgorithm(new TimeDiffusion());
+                    break;
+                default:
+                    break;
             }
         });
     }
@@ -90,12 +89,8 @@ public class Controller implements Initializable {
      * Sets the sensor.
      * @param sensor
      */
-    public void setSensor(Sensor sensor) {
+    public void setSensor(Sensor<Value> sensor) {
         this.sensor = sensor;
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> {
-            this.sensor.tick();
-        }));
-        timeline.setCycleCount(Animation.INDEFINITE);
     }
 
     /**
@@ -127,12 +122,26 @@ public class Controller implements Initializable {
      * Generate the display number for the window.
      */
     private void generateDisplays() {
+        HBox line = new HBox();
+        
         for (int i = 0; i < channels.size(); i++) {
-            Label value = new Label("Display " + i);
-
-            channels.get(i).addObserver(new FxDisplay(value));
-
-            displays.add(value, 0, i);
+            if (i % LINE_WIDTH == 0) {
+                line = new HBox();
+                line.setAlignment(Pos.CENTER);
+                line.setSpacing(20);
+                displays.getChildren().add(line);
+            }
+            
+            FxDisplay value = new FxDisplay(i + 1);
+            channels.get(i).addObserver(value);
+            line.getChildren().add(value);
         }
+    }
+
+    /**
+     * Shuts down the executor service.
+     */
+    public void shutdown() {
+        executorService.shutdown();
     }
 }
