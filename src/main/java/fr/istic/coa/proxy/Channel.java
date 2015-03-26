@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Channel implements Sensor<Future<Value>>, SensorObserver, Observable {
 
-    private static final int DELAY = 1000;
+    private static final int DELAY = 500;
     
     private Sensor<Value> sensor;
     private List<Observer> observers;

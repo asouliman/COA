@@ -142,6 +142,8 @@ public class Controller implements Initializable {
      * Shuts down the executor service.
      */
     public void shutdown() {
-        executorService.shutdown();
+        if (executorService != null) {
+            executorService.shutdown();
+        }
     }
 }

@@ -18,7 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Main extends Application {
 
-    private final int NUMBER_OF_DISPLAY = 4;
+    private static final int NUMBER_OF_DISPLAY = 4;
     private Controller controller;
     private Sensor<Value> sensor;
     private List<Channel> channels;
